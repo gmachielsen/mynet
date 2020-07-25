@@ -17,7 +17,7 @@
                 <div class="row">
                     <div class="col-md-4">
                         <div class="form-group">
-                            <input type="text" name="search" class="form-control" placeholder="search">
+                            <input type="text" name="search" autofocus class="form-control" placeholder="search" value="{{ request()->search }}">
                         </div>
                     </div> <!-- end of the column -->
                     <div class="col-md-4">
@@ -45,17 +45,18 @@
                             <td>{{ $index+1}}</td>
                             <td>{{ $category->name }}</td>
                             <td>
-                                <a href="{{ route('dashboard.categories.edit', $category->id)}}"><i class="fa fa-edit"></i>Edit</a>
-                                <form method="POST" action="{{ route('dashboard.categories.delete')}}">
+                                <a href="{{ route('dashboard.categories.edit', $category->id)}}" class="btn btn-info btn-sm"><i class="fa fa-edit"></i>Edit</a>
+                                <form method="POST" style="display: inline-block;" action="{{ route('dashboard.categories.destroy', $category->id)}}">
                                     @csrf
                                     @method('delete')
-                                    <button type="submit" class="btn btn-danger"><i class="fa fa-trash"></i>Delete</button>
+                                    <button type="submit" class="btn btn-danger btn-sm delete"><i class="fa fa-trash"></i>Delete</button>
                                 </form>
                             </td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
+            {{ $categories->links() }}
             @else 
                 <h3 style="font-weight: 400">Sorry no records found</h3>
             @endif
