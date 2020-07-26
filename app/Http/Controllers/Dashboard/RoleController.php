@@ -10,7 +10,7 @@ class RoleController extends Controller
 {
     public function index()
     {
-        $roles = Role::whenSearch(request()->search)->paginate(5);
+        $roles = Role::whereRoleNot(['super_admin', 'admin', 'user'])->whenSearch(request()->search)->paginate(5);
         return view('dashboard.roles.index', compact('roles'));
     }
 
@@ -23,9 +23,12 @@ class RoleController extends Controller
     {
         $request->validate([
             'name' => 'required|unique:roles,name',
+            'permissions' => 'required|array|min:1',
         ]);
 
-        Category::create($request->all());
+        $role = Role::create($request->all());
+        $role->attachPermissions($request->permissions);
+
         session()->flash('success', 'Data added successfully');
         return redirect()->route('dashboard.roles.index');
     }
@@ -35,25 +38,28 @@ class RoleController extends Controller
 
     }
 
-    public function edit(Category $category)
+    public function edit(Role $role)
     {
-        return view('dashboard.roles.edit', compact('category'));
+        return view('dashboard.roles.edit', compact('role'));
     }
 
-    public function update(Request $request, Category $category)
+    public function update(Request $request, Role $role)
     {
         $request->validate([
-            'name' => 'required|unique:roles,name,' . $category->id,
+            'name' => 'required|unique:roles,name,' . $role->id,
+            'permissions' => 'required|array|min:1',
+
         ]);
 
-        $category->update($request->all());
+        $role->update($request->all());
+        $role->syncPermissions($request->permissions);
         session()->flash('success', 'Data updated successfully');
         return redirect()->route('dashboard.roles.index');
     }
 
-    public function destroy(Category $category)
+    public function destroy(Role $role)
     {
-        $category->delete();
+        $role->delete();
         session()->flash('success', 'Data deleted successfully');
         return redirect()->route('dashboard.roles.index');
     }

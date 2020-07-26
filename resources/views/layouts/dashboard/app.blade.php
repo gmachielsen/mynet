@@ -47,6 +47,8 @@
     <script src="{{ asset('dashboard_files/js/jquery-3.3.1.min.js')}}"></script>
     <script src="{{ asset('dashboard_files/js/popper.min.js')}}"></script>
     <script src="{{ asset('dashboard_files/js/bootstrap.min.js')}}"></script>
+    <script src="{{ asset('dashboard_files/plugins/select2/select2.min.js')}}"></script>
+
     <script src="{{ asset('dashboard_files/js/main.js')}}"></script>
     <script>
       $(document).ready(function () {
@@ -67,6 +69,10 @@
               ]
             });
             n.show();
+          });
+
+          $('.select2').select2({
+            width: '100%'
           });
       });
     </script>
