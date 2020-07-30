@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Role;
+use App\Movie;
 
-class RoleController extends Controller
+class MovieController extends Controller
 {
     public function __construct()
     {
@@ -19,27 +19,27 @@ class RoleController extends Controller
 
     public function index()
     {
-        $roles = Role::whereRoleNot(['super_admin', 'admin', 'user'])->whenSearch(request()->search)->with('permissions')->withCount('users')->paginate(5);
-        return view('dashboard.roles.index', compact('roles'));
+        $movies = Movie::paginate(5);
+        return view('dashboard.movies.index', compact('movies'));
     }
 
     public function create()
     {
-        return view('dashboard.roles.create');
+        return view('dashboard.movies.create');
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|unique:roles,name',
+            'name' => 'required|unique:movies,name',
             'permissions' => 'required|array|min:1',
         ]);
 
-        $role = Role::create($request->all());
-        $role->attachPermissions($request->permissions);
+        $movie = Movie::create($request->all());
+        $movie->attachPermissions($request->permissions);
 
         session()->flash('success', 'Data added successfully');
-        return redirect()->route('dashboard.roles.index');
+        return redirect()->route('dashboard.movies.index');
     }
 
     public function show()
@@ -47,29 +47,29 @@ class RoleController extends Controller
 
     }
 
-    public function edit(Role $role)
+    public function edit(Movie $movie)
     {
-        return view('dashboard.roles.edit', compact('role'));
+        return view('dashboard.movies.edit', compact('movie'));
     }
 
-    public function update(Request $request, Role $role)
+    public function update(Request $request, Movie $movie)
     {
         $request->validate([
-            'name' => 'required|unique:roles,name,' . $role->id,
+            'name' => 'required|unique:movies,name,' . $movie->id,
             'permissions' => 'required|array|min:1',
 
         ]);
 
-        $role->update($request->all());
-        $role->syncPermissions($request->permissions);
+        $movie->update($request->all());
+        $movie->syncPermissions($request->permissions);
         session()->flash('success', 'Data updated successfully');
-        return redirect()->route('dashboard.roles.index');
+        return redirect()->route('dashboard.movies.index');
     }
 
-    public function destroy(Role $role)
+    public function destroy(Movie $movie)
     {
-        $role->delete();
+        $movie->delete();
         session()->flash('success', 'Data deleted successfully');
-        return redirect()->route('dashboard.roles.index');
+        return redirect()->route('dashboard.movies.index');
     }
 }
